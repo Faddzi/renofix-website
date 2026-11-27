@@ -3,10 +3,13 @@
 // as the PRD requires. Phones are excluded outright: mobile Chrome can kill the whole tab
 // when a WebGL scene uses too much memory, which shows as "This page couldn't load".
 
-export function canRun3D(): boolean {
+// scrollLinked: the scene only moves while the visitor scrolls (nothing plays on its own), so it
+// may run with reduced motion on. Windows turns that setting on whenever animation effects
+// are off, which would otherwise hide the area-page scenes from most Windows laptops.
+export function canRun3D({ scrollLinked = false }: { scrollLinked?: boolean } = {}): boolean {
   if (typeof window === "undefined") return false;
   const mq = (q: string) => window.matchMedia(q).matches;
-  if (mq("(prefers-reduced-motion: reduce)")) return false;
+  if (!scrollLinked && mq("(prefers-reduced-motion: reduce)")) return false;
   // touch-first devices (phones, tablets) and small screens
   if (!mq("(pointer: fine)") || !mq("(hover: hover)")) return false;
   if (window.innerWidth < 1024) return false;

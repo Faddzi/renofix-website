@@ -13,8 +13,6 @@ export type Area = {
   // Thane watches an apartment rise from its floor plan, Navi Mumbai watches a modular kitchen
   // assemble itself from an exploded drawing (client's choice: one scene per page).
   arrival: "skyline" | "apartment" | "kitchen";
-  // City-centre coordinates, shown as a small label over the scene
-  coords: string;
   // Skyline only: the real Renofix room seen through the window the camera flies into
   photo?: { src: string; alt: string };
 };
@@ -28,7 +26,6 @@ export const areas: Area[] = [
     description:
       "Interior design and renovation in Mumbai by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
     arrival: "skyline",
-    coords: "19.0760° N, 72.8777° E",
     photo: { src: "/images/living-dining-open-plan-01.jpg", alt: "Open-plan living and dining room with a cream sofa and bright cushions, a dark timber coffee table, brass planters and a false ceiling with cove lighting" },
   },
   {
@@ -39,7 +36,6 @@ export const areas: Area[] = [
     description:
       "Interior design and renovation in Thane by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
     arrival: "apartment",
-    coords: "19.2183° N, 72.9781° E",
   },
   {
     slug: "interior-design-navi-mumbai",
@@ -49,7 +45,6 @@ export const areas: Area[] = [
     description:
       "Interior design and renovation in Navi Mumbai by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
     arrival: "kitchen",
-    coords: "19.0330° N, 73.0297° E",
   },
 ];
 

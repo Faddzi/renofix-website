@@ -5,10 +5,12 @@
 // an apartment rise from its floor plan and furnish itself, and Navi Mumbai watches a modular
 // kitchen assemble itself from an exploded drawing.
 //
-// Desktops with a real GPU get the live scene. Phones, tablets, low-power machines and
-// reduced-motion users get the same flight as a short sequence of frames rendered from the
-// scene (public/images/areas/<slug>/), crossfaded and zoomed with the scroll, so the moment
-// still lands without WebGL. Reduced motion shows the final frame with no pinning.
+// Desktops with a real GPU get the live scene. Phones, tablets and low-power machines get the
+// same flight as a short sequence of frames rendered from the scene
+// (public/images/areas/<slug>/), crossfaded and zoomed with the scroll, so the moment still
+// lands without WebGL. Everything here moves only while the visitor scrolls, so it also runs
+// with reduced motion on (Windows sets it whenever animation effects are off); reduced motion
+// only drops the zoom on the frames.
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -40,7 +42,7 @@ export function AreaHero({ area }: { area: Area }) {
     const sync = () => setReduced(mq.matches);
     sync();
     mq.addEventListener("change", sync);
-    const start = () => setUse3D(canRun3D());
+    const start = () => setUse3D(canRun3D({ scrollLinked: true }));
     const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
     if (ric) ric(start);
     else setTimeout(start, 300);
@@ -77,7 +79,7 @@ export function AreaHero({ area }: { area: Area }) {
 
   // Frame sequence: frame i was rendered at progress i / (N - 1) * arrivalEnd.
   const end = arrivalEnd(area.arrival);
-  const f = reduced ? ARRIVAL_FRAMES - 1 : Math.min(1, progress / end) * (ARRIVAL_FRAMES - 1);
+  const f = Math.min(1, progress / end) * (ARRIVAL_FRAMES - 1);
   const base = Math.min(ARRIVAL_FRAMES - 1, Math.floor(f));
   const mix = f - base;
   const skyline = area.arrival === "skyline";
@@ -88,7 +90,7 @@ export function AreaHero({ area }: { area: Area }) {
     <section
       ref={section}
       aria-labelledby="area-title"
-      className={`relative ${reduced ? "" : "h-[240vh]"} ${skyline ? "bg-[#0b1426]" : kitchen ? "bg-[#191714]" : "bg-[#1f3550]"} text-white`}
+      className={`relative h-[240vh] ${skyline ? "bg-[#0b1426]" : kitchen ? "bg-[#191714]" : "bg-[#1f3550]"} text-white`}
     >
       <div
         ref={panel}
@@ -120,14 +122,14 @@ export function AreaHero({ area }: { area: Area }) {
                     }`}
                     style={{
                       opacity: k === 0 ? 1 : mix,
-                      transform: `scale(${k === 0 ? 1 + mix * (skyline ? 0.14 : 0.04) : 1})`,
+                      transform: `scale(${k === 0 && !reduced ? 1 + mix * (skyline ? 0.14 : 0.04) : 1})`,
                     }}
                   />
                 </picture>
               ) : null,
             )}
           {/* warm the browser cache for the next frames */}
-          {showFrames && !reduced && (
+          {showFrames && (
             <div hidden>
               {[base + 2, base + 3].filter((i) => i < ARRIVAL_FRAMES).map((i) => (
                 <picture key={i}>
@@ -172,9 +174,6 @@ export function AreaHero({ area }: { area: Area }) {
         <div data-arrival-overlay className="pointer-events-none absolute inset-0 flex items-end [@media(min-aspect-ratio:1/1)]:items-center">
           <div className="wrap pb-20 lg:pb-0">
             <div className="pointer-events-auto flex max-w-[34rem] flex-col gap-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-white/70">
-                {area.name} <span aria-hidden="true">·</span> {area.coords}
-              </p>
               <h1 id="area-title" className="display text-[clamp(2.6rem,6.4vw,5.2rem)]">
                 {area.headline}
               </h1>
@@ -194,17 +193,15 @@ export function AreaHero({ area }: { area: Area }) {
           </div>
         </div>
 
-        {!reduced && (
-          <div
-            data-arrival-overlay
-            aria-hidden="true"
-            className="pointer-events-none absolute bottom-6 right-6 hidden items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-white/70 lg:flex"
-            style={{ opacity: Math.max(0, 1 - progress * 5) }}
-          >
-            Scroll
-            <span className="block h-px w-10 bg-white/60" />
-          </div>
-        )}
+        <div
+          data-arrival-overlay
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-6 right-6 hidden items-center gap-3 text-sm font-semibold text-white/70 lg:flex"
+          style={{ opacity: Math.max(0, 1 - progress * 5) }}
+        >
+          Scroll
+          <span className="block h-px w-10 bg-white/60" />
+        </div>
       </div>
     </section>
   );

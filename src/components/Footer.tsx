@@ -14,7 +14,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Contact</h2>
+          <h2 className="mb-3 font-semibold">Contact</h2>
           <ul className="flex flex-col gap-2">
             <li>
               {contact.priti.label}:{" "}
@@ -43,7 +43,7 @@ export function Footer() {
         </div>
 
         <nav aria-label="Areas we serve">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Areas we serve</h2>
+          <h2 className="mb-3 font-semibold">Areas we serve</h2>
           <ul className="flex flex-col gap-2">
             {areas.map((a) => (
               <li key={a.slug}>
@@ -63,7 +63,7 @@ export function Footer() {
         </nav>
 
         <nav aria-label="Footer">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Pages</h2>
+          <h2 className="mb-3 font-semibold">Pages</h2>
           <ul className="flex flex-col gap-2">
             {nav.map((item) => (
               <li key={item.href}>

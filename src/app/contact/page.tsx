@@ -52,7 +52,7 @@ export default function ContactPage() {
                       {...(w.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                       className="group flex flex-col gap-0.5 py-4"
                     >
-                      <span className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">{w.label}</span>
+                      <span className="text-[var(--muted)]">{w.label}</span>
                       <span className="break-words text-xl font-semibold group-hover:text-[var(--accent)]">{w.value}</span>
                     </a>
                   </li>
