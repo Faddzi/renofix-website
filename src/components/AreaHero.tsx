@@ -138,7 +138,7 @@ export function AreaHero({ area }: { area: Area }) {
                 <SkylineScene
                   look="sea"
                   seed={7}
-                  photo={area.photo?.src ?? "/images/living-room-feature-wall-01.jpg"}
+                  photo={area.photo?.src ?? "/images/living-dining-open-plan-01.jpg"}
                   progress={progressRef}
                   onReady={() => setReady(true)}
                   onLost={() => setUse3D(false)}

@@ -28,7 +28,7 @@ export const areas: Area[] = [
       "Interior design and renovation in Mumbai by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
     arrival: "skyline",
     coords: "19.0760° N, 72.8777° E",
-    photo: { src: "/images/living-room-feature-wall-01.jpg", alt: "Living room with two grey sofas, a timber coffee table, printed blinds and a slatted timber screen with round inlays" },
+    photo: { src: "/images/living-dining-open-plan-01.jpg", alt: "Open-plan living and dining room with a cream sofa and bright cushions, a dark timber coffee table, brass planters and a false ceiling with cove lighting" },
   },
   {
     slug: "interior-design-thane",
