@@ -1,8 +1,10 @@
 "use client";
 
 // Render-style 3D model of the finished Renofix living room shown in
-// /images/living-room-feature-wall-01.jpg. Proportions and layout follow the photo so the
-// scroll crossfade lands on the real room. Plain geometry, no external models or HDRs.
+// /images/living-room-feature-wall-01.jpg. Proportions and layout follow the photo, so the
+// last step of the scroll lands on the real room. The room builds itself as the visitor
+// scrolls: the empty shell first, then the ceiling and window, the built-in joinery, the
+// sofas, and the loose furniture. Plain geometry, no external models or HDRs.
 
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Edges } from "@react-three/drei";
@@ -91,7 +93,33 @@ function Screen() {
   );
 }
 
-function Room() {
+type Progress = React.MutableRefObject<number>;
+
+// Build timeline: each stage drops into place over its own slice of the scroll progress.
+const STAGES: [number, number][] = [
+  [0.0, 0.16], // ceiling, recess, downlights, window, blinds, AC
+  [0.12, 0.3], // storage bench and timber screen
+  [0.26, 0.44], // sofas
+  [0.4, 0.58], // tables, rug
+];
+
+const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+
+function Stage({ i, progress, children }: { i: number; progress: Progress; children: React.ReactNode }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(() => {
+    const g = ref.current;
+    if (!g) return;
+    const [a, b] = STAGES[i];
+    const t = ease(Math.min(1, Math.max(0, (progress.current - a) / (b - a))));
+    g.visible = t > 0.001;
+    g.position.y = (1 - t) * 1.6;
+    g.scale.setScalar(0.6 + 0.4 * t);
+  });
+  return <group ref={ref}>{children}</group>;
+}
+
+function Room({ progress }: { progress: Progress }) {
   return (
     <group>
       {/* shell */}
@@ -116,6 +144,7 @@ function Room() {
         <meshStandardMaterial color={C.stone} roughness={1} />
       </mesh>
 
+      <Stage i={0} progress={progress}>
       {/* false ceiling recess and downlights */}
       <Box size={[2.2, 0.05, 1.2]} position={[0, 2.97, -0.8]} color="#4b5263" edges={false} />
       {[-1.2, 1.2].map((x) => (
@@ -140,19 +169,26 @@ function Room() {
 
       {/* AC unit */}
       <Box size={[0.9, 0.28, 0.2]} position={[0.1, 2.68, -2.48]} color="#f8f8f6" />
+      </Stage>
 
-      {/* sofas, side table, coffee table, rug */}
-      <Sofa x={-0.6} />
-      <Sofa x={0.9} />
-      <Box size={[0.36, 0.42, 0.5]} position={[0.15, 0.21, -1.95]} color={C.timberDark} />
-      <Box size={[1.1, 0.34, 0.8]} position={[0.1, 0.17, -0.55]} color={C.timber} />
-      <Box size={[2.6, 0.01, 1.8]} position={[0.1, 0.005, -0.7]} color={C.rug} edges={false} />
+      <Stage i={1} progress={progress}>
+        {/* low storage bench on the left, timber screen on the right */}
+        <Box size={[0.75, 0.42, 2.6]} position={[-2.25, 0.21, -0.6]} color={C.timberDark} />
+        <Box size={[0.8, 0.05, 2.65]} position={[-2.23, 0.445, -0.6]} color={C.stone} />
+        <Screen />
+      </Stage>
 
-      {/* low storage bench on the left */}
-      <Box size={[0.75, 0.42, 2.6]} position={[-2.25, 0.21, -0.6]} color={C.timberDark} />
-      <Box size={[0.8, 0.05, 2.65]} position={[-2.23, 0.445, -0.6]} color={C.stone} />
+      <Stage i={2} progress={progress}>
+        <Sofa x={-0.6} />
+        <Sofa x={0.9} />
+      </Stage>
 
-      <Screen />
+      <Stage i={3} progress={progress}>
+        {/* side table, coffee table, rug */}
+        <Box size={[0.36, 0.42, 0.5]} position={[0.15, 0.21, -1.95]} color={C.timberDark} />
+        <Box size={[1.1, 0.34, 0.8]} position={[0.1, 0.17, -0.55]} color={C.timber} />
+        <Box size={[2.6, 0.01, 1.8]} position={[0.1, 0.005, -0.7]} color={C.rug} edges={false} />
+      </Stage>
     </group>
   );
 }
@@ -186,7 +222,7 @@ function Rig({ pointer }: { pointer: React.MutableRefObject<{ x: number; y: numb
   return null;
 }
 
-export default function HeroScene({ onReady }: { onReady?: () => void }) {
+export default function HeroScene({ onReady, progress }: { onReady?: () => void; progress: Progress }) {
   const pointer = useRef({ x: 0, y: 0 });
   const wrap = useRef<HTMLDivElement>(null);
 
@@ -244,7 +280,7 @@ export default function HeroScene({ onReady }: { onReady?: () => void }) {
         />
         <pointLight position={[0, 2.6, -0.8]} intensity={4} distance={6} color="#ffe2b8" />
         <Rig pointer={pointer} />
-        <Room />
+        <Room progress={progress} />
       </Canvas>
     </div>
   );
