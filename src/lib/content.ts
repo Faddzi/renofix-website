@@ -72,3 +72,25 @@ export const placeholderTestimonials = [
   { quote: "Placeholder testimonial. Replace with a real client quote about a full home renovation.", name: "Client name", area: "Area" },
   { quote: "Placeholder testimonial. Replace with a real client quote about a bathroom renovation.", name: "Client name", area: "Area" },
 ];
+
+export const about = {
+  heading: "MEET THE FOUNDERS",
+  founders: [
+    {
+      id: "priti",
+      name: "Ms. Priti Kumawat",
+      role: "Owner",
+      bio: "Ms. Priti Kumawat leads Renofix with a clear purpose: to give every home a layout and look that truly belong to the people living in it. She has built a reputation for understanding what clients expect before they even put it into words. Her work begins at the first meeting, where she listens closely to the family's routine, taste and budget, and carries that brief through concept, material selection and detailed planning. She then stays on each project all the way to handover, coordinating the team and keeping clients informed at every milestone. Under her direction, Renofix has completed projects for families including modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Whether the home is a compact first flat or a spacious family residence, she treats each one with the same care and attention to detail. Priti believes good design should never depend on the size of the budget, and that a well-planned home is something every client deserves.",
+      // Hover line in the founder scene: a sentence taken unchanged from the bio above.
+      sceneLine:
+        "She has built a reputation for understanding what clients expect before they even put it into words.",
+    },
+    {
+      id: "husain",
+      name: "Mr. Husain Electricwala",
+      role: "Co-Owner",
+      bio: "Mr. Husain Electricwala is the force behind the work you see at RENOFIX. With 7+ years of hands-on experience in renovation and interior execution, he is known for keeping projects disciplined, orderly and true to the approved plan. He manages the site from the first day of work to the final inspection, supervising the team, scheduling each stage and resolving problems before they turn into delays. Material quality is one of his strongest commitments: he personally checks the products, finishes and fittings that go into every home, so that the result stays durable well beyond handover. Clients value his straightforward communication, as he explains progress clearly, responds quickly to concerns and sets realistic expectations from the start. From kitchens and ceilings to complete bathroom makeovers and full-home projects, Husain brings the same dependable approach to every site. His principle is simple: when the workmanship is right, the design speaks for itself.",
+      sceneLine: "His principle is simple: when the workmanship is right, the design speaks for itself.",
+    },
+  ],
+} as const;
