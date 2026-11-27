@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { canRun3D } from "@/lib/canRun3D";
 import { useEffect, useRef, useState } from "react";
 import { home } from "@/lib/content";
 
@@ -13,20 +14,6 @@ const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 const STATIC_RENDER = "/images/hero-render-living-room.jpg";
 const REAL_PHOTO = "/images/living-room-feature-wall-01.jpg";
 
-function canRun3D() {
-  if (typeof window === "undefined") return false;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-  const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
-  if (nav.connection?.saveData) return false;
-  if ((nav.hardwareConcurrency ?? 8) <= 4) return false;
-  if ((nav.deviceMemory ?? 8) <= 2) return false;
-  try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
 
 export function Hero() {
   const section = useRef<HTMLElement>(null);
@@ -122,7 +109,7 @@ export function Hero() {
                 className="absolute inset-0 transition-opacity duration-500"
                 style={{ opacity: sceneReady ? 1 : 0 }}
               >
-                <HeroScene progress={progressRef} onReady={() => setSceneReady(true)} />
+                <HeroScene progress={progressRef} onReady={() => setSceneReady(true)} onLost={() => setUse3D(false)} />
               </div>
             )}
             <Image

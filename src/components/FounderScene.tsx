@@ -210,21 +210,24 @@ export default function FounderScene({
   split,
   pointer,
   onReady,
+  onLost,
 }: {
   split: React.RefObject<number>;
   pointer: React.RefObject<{ x: number; y: number }>;
   onReady?: (invalidate: () => void) => void;
+  onLost?: () => void;
 }) {
   const parts = useMemo(() => kitchenParts(), []);
   return (
     <Canvas
       frameloop="demand"
-      dpr={[1, 1.75]}
+      dpr={[1, 1.5]}
       gl={{ antialias: true }}
       camera={{ fov: 38, near: 0.1, far: 40, position: [0, 1.75, 3.4] }}
       onCreated={({ gl, invalidate }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.05;
+        gl.domElement.addEventListener("webglcontextlost", () => onLost?.(), { once: true });
         onReady?.(invalidate);
       }}
       aria-hidden="true"
