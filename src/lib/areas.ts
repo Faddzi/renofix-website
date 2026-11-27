@@ -10,8 +10,9 @@ export type Area = {
   lead: string;
   description: string;
   // Arrival scene at the top of the page: Mumbai dives from the skyline into one lit window,
-  // Thane and Navi Mumbai watch an apartment rise from its floor plan (client's choice).
-  arrival: "skyline" | "apartment";
+  // Thane watches an apartment rise from its floor plan, Navi Mumbai watches a modular kitchen
+  // assemble itself from an exploded drawing (client's choice: one scene per page).
+  arrival: "skyline" | "apartment" | "kitchen";
   // City-centre coordinates, shown as a small label over the scene
   coords: string;
   // Skyline only: the real Renofix room seen through the window the camera flies into
@@ -47,7 +48,7 @@ export const areas: Area[] = [
     lead: "Renofix designs and renovates homes and commercial spaces in Navi Mumbai, from a single modular kitchen to a complete home interior.",
     description:
       "Interior design and renovation in Navi Mumbai by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
-    arrival: "apartment",
+    arrival: "kitchen",
     coords: "19.0330° N, 73.0297° E",
   },
 ];
