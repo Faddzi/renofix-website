@@ -19,6 +19,8 @@ export type Project = {
   title: string;
   category: Category;
   cover: Photo;
+  // further photos of the same project, shown after the cover in the lightbox
+  photos?: Photo[];
   featured?: boolean;
 };
 
@@ -58,6 +60,14 @@ export const projects: Project[] = [
       width: 1500,
       height: 2000,
     },
+    photos: [
+      {
+        src: "/images/bathroom-floral-border-02.jpg",
+        alt: "Close-up of the floral border tile band with chrome taps on a beige marble-look wall",
+        width: 1500,
+        height: 2000,
+      },
+    ],
   },
   {
     slug: "modular-kitchen-granite",
@@ -115,6 +125,61 @@ export const projects: Project[] = [
       alt: "U-shaped modular kitchen with mint and white shutters and a black granite counter",
       width: 268,
       height: 268,
+    },
+  },
+  {
+    slug: "living-dining-open-plan",
+    title: "Open-plan living and dining",
+    category: "full-homes",
+    cover: {
+      src: "/images/living-dining-open-plan-01.jpg",
+      alt: "Open-plan living and dining room with a cream sofa and bright cushions, a dark timber coffee table, brass planters and a false ceiling with cove lighting",
+      width: 512,
+      height: 382,
+    },
+  },
+  {
+    slug: "living-room-tv-unit",
+    title: "Living room TV unit",
+    category: "full-homes",
+    cover: {
+      src: "/images/living-room-tv-unit-01.jpg",
+      alt: "Living room with a backlit TV wall unit in white and dark timber, a glass display cabinet and a round wall clock",
+      width: 376,
+      height: 226,
+    },
+  },
+  {
+    slug: "bedroom-jali-ceiling",
+    title: "Bedroom with backlit cut-work ceiling",
+    category: "ceilings",
+    cover: {
+      src: "/images/bedroom-ceiling-panel-01.jpg",
+      alt: "Bedroom with a backlit cut-work panel framing the false ceiling and running down the wall behind the bed",
+      width: 188,
+      height: 250,
+    },
+  },
+  {
+    slug: "ceiling-rope-pendant",
+    title: "Ceiling with rope ring pendant",
+    category: "ceilings",
+    cover: {
+      src: "/images/ceiling-rope-pendant-01.jpg",
+      alt: "White ceiling with a rope-wrapped ring pendant light holding four bulbs",
+      width: 1500,
+      height: 2000,
+    },
+  },
+  {
+    slug: "ceiling-framing-on-site",
+    title: "False ceiling framing on site",
+    category: "ceilings",
+    cover: {
+      src: "/images/ceiling-framing-01.jpg",
+      alt: "Metal framing for a false ceiling during construction, with protected floors and a balcony beyond",
+      width: 1500,
+      height: 2000,
     },
   },
 ];
