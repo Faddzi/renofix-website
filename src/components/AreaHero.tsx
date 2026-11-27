@@ -7,7 +7,7 @@
 //
 // Desktops with a real GPU get the live scene. Phones, tablets and low-power machines get the
 // same flight as a short sequence of frames rendered from the scene
-// (public/images/areas/<slug>/), crossfaded and zoomed with the scroll, so the moment still
+// (public/images/areas/<slug>/), drawn on a canvas, crossfaded and zoomed with the scroll, so the moment still
 // lands without WebGL. Everything here moves only while the visitor scrolls, so it also runs
 // with reduced motion on (Windows sets it whenever animation effects are off); reduced motion
 // only drops the zoom on the frames.
@@ -31,60 +31,166 @@ const frameSrc = (slug: string, kind: "w" | "t", i: number) => `/images/areas/${
 export function AreaHero({ area }: { area: Area }) {
   const section = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const cue = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
-  const [progress, setProgress] = useState(0);
+  const drawRef = useRef<() => void>(() => {});
   const [use3D, setUse3D] = useState(false);
   const [ready, setReady] = useState(false);
-  const [reduced, setReduced] = useState(false);
+
+  const skyline = area.arrival === "skyline";
+  const kitchen = area.arrival === "kitchen";
+  const showFrames = !use3D || !ready;
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReduced(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
     const start = () => setUse3D(canRun3D({ scrollLinked: true }));
     const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
     if (ric) ric(start);
     else setTimeout(start, 300);
-    return () => mq.removeEventListener("change", sync);
   }, []);
 
+  // Scroll -> progress. No React state changes per scroll: the frames are drawn straight onto
+  // a canvas, the 3D scene reads the ref, and the scroll cue is faded through its style.
   useEffect(() => {
     let raf = 0;
+    let top = 0;
+    const measure = () => {
+      if (panel.current) top = parseFloat(getComputedStyle(panel.current).top) || 0;
+    };
     const update = () => {
       raf = 0;
       const s = section.current;
       const p = panel.current;
       if (!s || !p) return;
-      const top = parseFloat(getComputedStyle(p).top) || 0;
       const sr = s.getBoundingClientRect();
       const travel = sr.height - p.offsetHeight;
       const v = travel > 1 ? Math.min(1, Math.max(0, (top - sr.top) / travel)) : 1;
+      if (v === progressRef.current) return;
       progressRef.current = v;
-      setProgress(v);
+      if (cue.current) cue.current.style.opacity = String(Math.max(0, 1 - v * 5));
+      drawRef.current();
       window.dispatchEvent(new Event("renofix-area-redraw"));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+    measure();
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [reduced]);
+  }, []);
 
-  // Frame sequence: frame i was rendered at progress i / (N - 1) * arrivalEnd.
-  const end = arrivalEnd(area.arrival);
-  const f = Math.min(1, progress / end) * (ARRIVAL_FRAMES - 1);
-  const base = Math.min(ARRIVAL_FRAMES - 1, Math.floor(f));
-  const mix = f - base;
-  const skyline = area.arrival === "skyline";
-  const kitchen = area.arrival === "kitchen";
-  const showFrames = !use3D || !ready;
+  // Frame sequence on a canvas. All 16 frames (a few KB each) are fetched and decoded up
+  // front, so scrolling only ever draws images that are already in memory.
+  useEffect(() => {
+    if (!showFrames) {
+      drawRef.current = () => {};
+      return;
+    }
+    const c = canvas.current;
+    const ctx = c?.getContext("2d");
+    if (!c || !ctx) return;
+    const wideMq = window.matchMedia("(min-aspect-ratio: 1/1)");
+    const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const end = arrivalEnd(area.arrival);
+    let imgs: (HTMLImageElement | null)[] = [];
+    let alive = true;
+
+    const load = () => {
+      const kind = wideMq.matches ? "w" : "t";
+      const set: (HTMLImageElement | null)[] = Array(ARRIVAL_FRAMES).fill(null);
+      imgs = set;
+      for (let i = 0; i < ARRIVAL_FRAMES; i++) {
+        const im = new Image();
+        im.src = frameSrc(area.slug, kind, i);
+        im.decode()
+          .catch(() => undefined)
+          .then(() => {
+            if (!alive || imgs !== set || !im.naturalWidth) return;
+            set[i] = im;
+            draw();
+          });
+      }
+    };
+    const size = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const w = Math.round(c.clientWidth * dpr);
+      const h = Math.round(c.clientHeight * dpr);
+      if (c.width !== w || c.height !== h) {
+        c.width = w;
+        c.height = h;
+      }
+    };
+    // nearest decoded frame to i, so a frame that is still loading never leaves a gap
+    const pick = (i: number) => {
+      for (let d = 0; d < ARRIVAL_FRAMES; d++) {
+        if (imgs[i - d]) return imgs[i - d];
+        if (imgs[i + d]) return imgs[i + d];
+      }
+      return null;
+    };
+    const paint = (im: HTMLImageElement, scale: number, ox: number, oy: number) => {
+      const W = c.width;
+      const H = c.height;
+      const cover = Math.max(W / im.naturalWidth, H / im.naturalHeight) * scale;
+      const dw = im.naturalWidth * cover;
+      const dh = im.naturalHeight * cover;
+      // object-cover centred, then zoomed about the origin (ox, oy) of the panel
+      const x = (W - dw / scale) / 2;
+      const y = (H - dh / scale) / 2;
+      ctx.drawImage(im, ox * W + (x - ox * W) * scale, oy * H + (y - oy * H) * scale, dw, dh);
+    };
+    function draw() {
+      if (!c || !ctx) return;
+      const f = Math.min(1, progressRef.current / end) * (ARRIVAL_FRAMES - 1);
+      const base = Math.min(ARRIVAL_FRAMES - 1, Math.floor(f));
+      const mix = f - base;
+      const a = pick(base);
+      if (!a) return;
+      const wide = wideMq.matches;
+      const ox = skyline ? (wide ? 0.72 : 0.5) : 0.5;
+      const oy = skyline ? (wide ? 0.45 : 0.28) : 0.5;
+      const zoom = reducedMq.matches ? 1 : 1 + mix * (skyline ? 0.14 : 0.04);
+      ctx.globalAlpha = 1;
+      paint(a, zoom, ox, oy);
+      const b = base + 1 < ARRIVAL_FRAMES ? imgs[base + 1] : null;
+      if (b && mix > 0.004) {
+        ctx.globalAlpha = mix;
+        paint(b, 1, ox, oy);
+        ctx.globalAlpha = 1;
+      }
+    }
+    const onResize = () => {
+      size();
+      draw();
+    };
+    const onAspect = () => {
+      load();
+      draw();
+    };
+    size();
+    load();
+    drawRef.current = draw;
+    window.addEventListener("resize", onResize);
+    wideMq.addEventListener("change", onAspect);
+    reducedMq.addEventListener("change", draw);
+    return () => {
+      alive = false;
+      drawRef.current = () => {};
+      window.removeEventListener("resize", onResize);
+      wideMq.removeEventListener("change", onAspect);
+      reducedMq.removeEventListener("change", draw);
+    };
+  }, [showFrames, area.slug, area.arrival, skyline]);
 
   return (
     <section
@@ -107,37 +213,20 @@ export function AreaHero({ area }: { area: Area }) {
                 : `A 3D floor plan of a ${area.name} apartment that rises into walls and furnishes itself, room by room`
           }
         >
-          {showFrames &&
-            [base, base + 1].map((i, k) =>
-              i < ARRIVAL_FRAMES ? (
-                <picture key={i}>
-                  <source media="(min-aspect-ratio: 1/1)" srcSet={frameSrc(area.slug, "w", i)} />
-                  <img
-                    src={frameSrc(area.slug, "t", i)}
-                    alt=""
-                    decoding="async"
-                    fetchPriority={i === 0 ? "high" : "auto"}
-                    className={`absolute inset-0 h-full w-full object-cover ${
-                      skyline ? "origin-[50%_28%] [@media(min-aspect-ratio:1/1)]:origin-[72%_45%]" : "origin-center"
-                    }`}
-                    style={{
-                      opacity: k === 0 ? 1 : mix,
-                      transform: `scale(${k === 0 && !reduced ? 1 + mix * (skyline ? 0.14 : 0.04) : 1})`,
-                    }}
-                  />
-                </picture>
-              ) : null,
-            )}
-          {/* warm the browser cache for the next frames */}
           {showFrames && (
-            <div hidden>
-              {[base + 2, base + 3].filter((i) => i < ARRIVAL_FRAMES).map((i) => (
-                <picture key={i}>
-                  <source media="(min-aspect-ratio: 1/1)" srcSet={frameSrc(area.slug, "w", i)} />
-                  <img src={frameSrc(area.slug, "t", i)} alt="" loading="eager" />
-                </picture>
-              ))}
-            </div>
+            <>
+              {/* first frame as a plain image, so something paints before the script runs */}
+              <picture>
+                <source media="(min-aspect-ratio: 1/1)" srcSet={frameSrc(area.slug, "w", 0)} />
+                <img
+                  src={frameSrc(area.slug, "t", 0)}
+                  alt=""
+                  fetchPriority="high"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </picture>
+              <canvas ref={canvas} aria-hidden="true" className="absolute inset-0 h-full w-full" />
+            </>
           )}
           {use3D && (
             <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: ready ? 1 : 0 }}>
@@ -196,8 +285,8 @@ export function AreaHero({ area }: { area: Area }) {
         <div
           data-arrival-overlay
           aria-hidden="true"
+          ref={cue}
           className="pointer-events-none absolute bottom-6 right-6 hidden items-center gap-3 text-sm font-semibold text-white/70 lg:flex"
-          style={{ opacity: Math.max(0, 1 - progress * 5) }}
         >
           Scroll
           <span className="block h-px w-10 bg-white/60" />
