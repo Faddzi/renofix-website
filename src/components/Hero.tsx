@@ -61,7 +61,7 @@ export function Hero() {
       } else {
         // phones: build as the frame moves up through the screen
         const fr = f.getBoundingClientRect();
-        p = (vh * 0.95 - fr.top) / (vh * 0.75);
+        p = (vh * 0.7 - fr.top) / (vh * 0.6);
       }
       p = Math.min(1, Math.max(0, p));
       progressRef.current = p;
