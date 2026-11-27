@@ -58,6 +58,14 @@ export function Footer() {
           </ul>
         </nav>
       </div>
+      <div className="border-t border-[var(--line)]">
+        <p className="wrap py-5 text-sm text-[var(--muted)]">
+          Developed &amp; maintained by{" "}
+          <a className="link-underline" href="https://seven72.com" target="_blank" rel="noopener">
+            seven72.com
+          </a>
+        </p>
+      </div>
     </footer>
   );
 }
