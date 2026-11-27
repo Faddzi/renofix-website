@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { AreaHero } from "@/components/AreaHero";
 import { ClosingCta } from "@/components/ClosingCta";
 import { areaBySlug, areas } from "@/lib/areas";
 import { contact, home, services, steps } from "@/lib/content";
@@ -37,22 +38,7 @@ export function AreaPage({ slug }: { slug: string }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section aria-labelledby="area-title">
-        <div className="wrap flex flex-col gap-6 pb-16 pt-10 md:pb-24 md:pt-16">
-          <h1 id="area-title" className="display max-w-[18ch] text-[clamp(2.8rem,8vw,6.5rem)]">
-            {a.headline}
-          </h1>
-          <p className="max-w-[40rem] text-lg text-[var(--muted)] md:text-xl">{a.lead}</p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/contact" className="btn btn-primary">
-              Book a free consultation
-            </Link>
-            <a href={`tel:${contact.priti.tel}`} className="btn btn-ghost">
-              Call {contact.priti.display}
-            </a>
-          </div>
-        </div>
-      </section>
+      <AreaHero area={a} />
 
       <section aria-labelledby="area-intro-title" className="border-t border-[var(--line)]">
         <div className="wrap grid gap-8 py-20 md:py-24 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
