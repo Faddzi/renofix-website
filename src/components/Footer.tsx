@@ -7,21 +7,10 @@ import { areas } from "@/lib/areas";
 export function Footer() {
   return (
     <footer className="border-t border-[var(--line)] bg-[var(--surface)] pb-24 lg:pb-0">
-      <div className="wrap grid gap-10 py-14 md:grid-cols-[1.2fr_1fr_1fr] md:py-16">
+      <div className="wrap grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] md:py-16">
         <div className="flex flex-col gap-4">
           <Logo />
-          <p className="text-[var(--muted)]">
-            {areas.map((a, i) => (
-              <span key={a.slug}>
-                {i > 0 && (i === areas.length - 1 ? " and " : ", ")}
-                <Link className="link-underline" href={`/${a.slug}`} title={`Interior design in ${a.name}`}>
-                  {a.name}
-                </Link>
-              </span>
-            ))}
-            <br />
-            {contact.since}
-          </p>
+          <p className="text-[var(--muted)]">{contact.since}</p>
         </div>
 
         <div>
@@ -52,6 +41,26 @@ export function Footer() {
             </li>
           </ul>
         </div>
+
+        <nav aria-label="Areas we serve">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Areas we serve</h2>
+          <ul className="flex flex-col gap-2">
+            {areas.map((a) => (
+              <li key={a.slug}>
+                <Link
+                  href={`/${a.slug}`}
+                  title={`Interior design and renovation in ${a.name}`}
+                  className="group inline-flex items-baseline gap-2 hover:text-[var(--accent)]"
+                >
+                  {a.name}
+                  <span aria-hidden="true" className="text-[var(--muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--accent)]">
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <nav aria-label="Footer">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Pages</h2>
