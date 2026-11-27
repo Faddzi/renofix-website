@@ -361,7 +361,15 @@ function Rig({ pointer }: { pointer: React.MutableRefObject<{ x: number; y: numb
   return null;
 }
 
-export default function HeroScene({ onReady, progress }: { onReady?: () => void; progress: Progress }) {
+export default function HeroScene({
+  onReady,
+  onLost,
+  progress,
+}: {
+  onReady?: () => void;
+  onLost?: () => void;
+  progress: Progress;
+}) {
   const pointer = useRef({ x: 0, y: 0 });
   const wrap = useRef<HTMLDivElement>(null);
 
@@ -392,13 +400,23 @@ export default function HeroScene({ onReady, progress }: { onReady?: () => void;
       <Canvas
         frameloop="demand"
         shadows
-        dpr={[1, 1.75]}
+        dpr={[1, 1.5]}
         gl={{ antialias: true, preserveDrawingBuffer: false }}
         camera={{ fov: CAM.vfov, near: 0.05, far: 40, position: [CAM.x, CAM.y, CAM.z] }}
         onCreated={({ gl, invalidate }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.1;
-          window.addEventListener("renofix-hero-pointer", () => invalidate());
+          const redraw = () => invalidate();
+          window.addEventListener("renofix-hero-pointer", redraw);
+          // If the GPU drops the scene, fall back to the static render instead of a blank frame.
+          gl.domElement.addEventListener(
+            "webglcontextlost",
+            () => {
+              window.removeEventListener("renofix-hero-pointer", redraw);
+              onLost?.();
+            },
+            { once: true },
+          );
         }}
         aria-hidden="true"
       >

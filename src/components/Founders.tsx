@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { canRun3D } from "@/lib/canRun3D";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { about } from "@/lib/content";
 
@@ -11,20 +12,6 @@ const FounderScene = dynamic(() => import("./FounderScene"), { ssr: false });
 // low-power devices, with reduced motion, or without WebGL.
 const STATIC_RENDER = "/images/about-render-split.jpg";
 
-function canRun3D() {
-  if (typeof window === "undefined") return false;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-  const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
-  if (nav.connection?.saveData) return false;
-  if ((nav.hardwareConcurrency ?? 8) <= 4) return false;
-  if ((nav.deviceMemory ?? 8) <= 2) return false;
-  try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
 
 const [priti, husain] = about.founders;
 
@@ -133,7 +120,7 @@ export function Founders() {
             <Image src={STATIC_RENDER} alt="" fill priority sizes="(min-width: 88rem) 84rem, 100vw" className="object-cover" />
             {use3D && (
               <div className="absolute inset-0 transition-opacity duration-500" style={{ opacity: sceneReady ? 1 : 0 }}>
-                <FounderScene split={split} pointer={pointer} onReady={onReady} />
+                <FounderScene split={split} pointer={pointer} onReady={onReady} onLost={() => setUse3D(false)} />
               </div>
             )}
 
