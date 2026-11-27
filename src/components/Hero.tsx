@@ -34,6 +34,8 @@ export function Hero() {
   const [use3D, setUse3D] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [progress, setProgress] = useState(0);
+  // Read every frame by the 3D scene, so the build follows the scroll without re-rendering React.
+  const progressRef = useRef(0);
 
   useEffect(() => {
     // Load the 3D scene only once the page is idle, so it never delays the headline or photos.
@@ -54,14 +56,17 @@ export function Hero() {
       const sr = s.getBoundingClientRect();
       let p: number;
       if (sr.height > vh * 1.2) {
-        // desktop: the hero is pinned while the render turns into the real room
+        // desktop: the hero is pinned while the room builds itself and turns into the real room
         p = -sr.top / (sr.height - vh);
       } else {
-        // phones: blend as the frame moves up through the screen
+        // phones: build as the frame moves up through the screen
         const fr = f.getBoundingClientRect();
-        p = (vh * 0.8 - fr.top) / (vh * 0.55);
+        p = (vh * 0.7 - fr.top) / (vh * 0.6);
       }
-      setProgress(Math.min(1, Math.max(0, p)));
+      p = Math.min(1, Math.max(0, p));
+      progressRef.current = p;
+      setProgress(p);
+      window.dispatchEvent(new Event("renofix-hero-pointer"));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -76,11 +81,14 @@ export function Hero() {
     };
   }, []);
 
-  // ease the crossfade so both states hold for a moment at each end
-  const blend = Math.min(1, Math.max(0, (progress - 0.15) / 0.6));
+  // The 3D build uses the first ~60% of the progress; the real photo fades in after it.
+  // Without 3D, the static render simply crossfades into the photo.
+  const blend = use3D
+    ? Math.min(1, Math.max(0, (progress - 0.68) / 0.24))
+    : Math.min(1, Math.max(0, (progress - 0.15) / 0.6));
 
   return (
-    <section ref={section} aria-labelledby="hero-title" className="relative lg:h-[175vh]">
+    <section ref={section} aria-labelledby="hero-title" className="relative lg:h-[260vh]">
       <div className="lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-5rem)] lg:items-center">
         <div className="wrap grid gap-8 pb-12 pt-8 md:pt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-12 lg:py-0">
           <div className="flex min-w-0 flex-col gap-6">
@@ -99,7 +107,7 @@ export function Hero() {
             ref={frame}
             className="relative aspect-[16/9] w-full min-w-0 overflow-hidden bg-[var(--hero-ground)]"
             role="img"
-            aria-label="A 3D render of a Renofix living room blending into a photo of the same room after it was built"
+            aria-label="A 3D render of a Renofix living room that builds itself piece by piece and then becomes a photo of the same room after it was built"
           >
             <Image
               src={STATIC_RENDER}
@@ -114,7 +122,7 @@ export function Hero() {
                 className="absolute inset-0 transition-opacity duration-500"
                 style={{ opacity: sceneReady ? 1 : 0 }}
               >
-                <HeroScene onReady={() => setSceneReady(true)} />
+                <HeroScene progress={progressRef} onReady={() => setSceneReady(true)} />
               </div>
             )}
             <Image
