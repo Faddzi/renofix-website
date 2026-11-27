@@ -9,6 +9,13 @@ export type Area = {
   headline: string;
   lead: string;
   description: string;
+  // Arrival scene at the top of the page: Mumbai dives from the skyline into one lit window,
+  // Thane and Navi Mumbai watch an apartment rise from its floor plan (client's choice).
+  arrival: "skyline" | "apartment";
+  // City-centre coordinates, shown as a small label over the scene
+  coords: string;
+  // Skyline only: the real Renofix room seen through the window the camera flies into
+  photo?: { src: string; alt: string };
 };
 
 export const areas: Area[] = [
@@ -19,6 +26,9 @@ export const areas: Area[] = [
     lead: "Renofix designs and renovates homes and commercial spaces in Mumbai, from a single modular kitchen to a complete home interior.",
     description:
       "Interior design and renovation in Mumbai by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
+    arrival: "skyline",
+    coords: "19.0760° N, 72.8777° E",
+    photo: { src: "/images/living-room-feature-wall-01.jpg", alt: "Living room with two grey sofas, a timber coffee table, printed blinds and a slatted timber screen with round inlays" },
   },
   {
     slug: "interior-design-thane",
@@ -27,6 +37,8 @@ export const areas: Area[] = [
     lead: "Renofix designs and renovates homes and commercial spaces in Thane, from a single modular kitchen to a complete home interior.",
     description:
       "Interior design and renovation in Thane by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
+    arrival: "apartment",
+    coords: "19.2183° N, 72.9781° E",
   },
   {
     slug: "interior-design-navi-mumbai",
@@ -35,6 +47,8 @@ export const areas: Area[] = [
     lead: "Renofix designs and renovates homes and commercial spaces in Navi Mumbai, from a single modular kitchen to a complete home interior.",
     description:
       "Interior design and renovation in Navi Mumbai by Renofix: modular kitchens, ceiling designs, bathroom renovations and complete home interiors. Book a free consultation.",
+    arrival: "apartment",
+    coords: "19.0330° N, 73.0297° E",
   },
 ];
 
