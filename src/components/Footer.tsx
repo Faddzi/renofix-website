@@ -2,6 +2,7 @@ import Link from "next/link";
 import { contact } from "@/lib/content";
 import { Logo } from "./Logo";
 import { nav } from "@/lib/nav";
+import { areas } from "@/lib/areas";
 
 export function Footer() {
   return (
@@ -10,7 +11,14 @@ export function Footer() {
         <div className="flex flex-col gap-4">
           <Logo />
           <p className="text-[var(--muted)]">
-            {contact.serviceArea}
+            {areas.map((a, i) => (
+              <span key={a.slug}>
+                {i > 0 && (i === areas.length - 1 ? " and " : ", ")}
+                <Link className="link-underline" href={`/${a.slug}`} title={`Interior design in ${a.name}`}>
+                  {a.name}
+                </Link>
+              </span>
+            ))}
             <br />
             {contact.since}
           </p>
