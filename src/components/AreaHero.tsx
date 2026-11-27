@@ -1,8 +1,9 @@
 "use client";
 
 // Arrival at the top of each area page. A pinned, full-width panel that plays a 3D scene as
-// the visitor scrolls: Mumbai dives from the night skyline into one lit window, Thane and
-// Navi Mumbai watch an apartment rise from its floor plan and furnish itself.
+// the visitor scrolls: Mumbai dives from the night skyline into one lit window, Thane watches
+// an apartment rise from its floor plan and furnish itself, and Navi Mumbai watches a modular
+// kitchen assemble itself from an exploded drawing.
 //
 // Desktops with a real GPU get the live scene. Phones, tablets, low-power machines and
 // reduced-motion users get the same flight as a short sequence of frames rendered from the
@@ -18,6 +19,7 @@ import type { Area } from "@/lib/areas";
 
 const SkylineScene = dynamic(() => import("./AreaScene"), { ssr: false });
 const ApartmentScene = dynamic(() => import("./ApartmentScene"), { ssr: false });
+const KitchenScene = dynamic(() => import("./KitchenScene"), { ssr: false });
 
 export const ARRIVAL_FRAMES = 16;
 // The skyline flight finishes at 90% of the scroll and holds; the apartment uses all of it.
@@ -79,13 +81,14 @@ export function AreaHero({ area }: { area: Area }) {
   const base = Math.min(ARRIVAL_FRAMES - 1, Math.floor(f));
   const mix = f - base;
   const skyline = area.arrival === "skyline";
+  const kitchen = area.arrival === "kitchen";
   const showFrames = !use3D || !ready;
 
   return (
     <section
       ref={section}
       aria-labelledby="area-title"
-      className={`relative ${reduced ? "" : "h-[240vh]"} ${skyline ? "bg-[#0b1426]" : "bg-[#1f3550]"} text-white`}
+      className={`relative ${reduced ? "" : "h-[240vh]"} ${skyline ? "bg-[#0b1426]" : kitchen ? "bg-[#191714]" : "bg-[#1f3550]"} text-white`}
     >
       <div
         ref={panel}
@@ -97,7 +100,9 @@ export function AreaHero({ area }: { area: Area }) {
           aria-label={
             skyline
               ? `A 3D flight over ${area.name} at dusk, down into the lit window of a finished Renofix living room`
-              : `A 3D floor plan of a ${area.name} apartment that rises into walls and furnishes itself, room by room`
+              : kitchen
+                ? `A 3D exploded drawing of a modular kitchen that assembles itself, piece by piece, in a ${area.name} home`
+                : `A 3D floor plan of a ${area.name} apartment that rises into walls and furnishes itself, room by room`
           }
         >
           {showFrames &&
@@ -143,6 +148,8 @@ export function AreaHero({ area }: { area: Area }) {
                   onReady={() => setReady(true)}
                   onLost={() => setUse3D(false)}
                 />
+              ) : kitchen ? (
+                <KitchenScene progress={progressRef} onReady={() => setReady(true)} onLost={() => setUse3D(false)} />
               ) : (
                 <ApartmentScene
                   plan={area.slug === "interior-design-thane" ? "2bhk" : "3bhk"}

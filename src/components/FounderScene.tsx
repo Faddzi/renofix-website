@@ -15,14 +15,14 @@ const BUILT_BG = "#efe9df";
 const LAYER_PLAN = 1;
 const LAYER_BUILT = 2;
 
-type Part = {
+export type Part = {
   size: [number, number, number];
   pos: [number, number, number];
   color: string;
   edges?: boolean;
 };
 
-const C = {
+export const KITCHEN_COLORS = {
   floor: "#d9cfbf",
   wall: "#efe9df",
   base: "#5f6b4e",
@@ -35,45 +35,45 @@ const C = {
   handle: "#3a3631",
 };
 
-function kitchenParts(): Part[] {
+export function kitchenParts(): Part[] {
   const parts: Part[] = [
     // room shell
-    { size: [6, 0.02, 4], pos: [0, -0.01, -0.5], color: C.floor },
-    { size: [6, 3, 0.04], pos: [0, 1.5, -1.52], color: C.wall },
-    { size: [0.04, 3, 4], pos: [-2.52, 1.5, -0.5], color: C.wall },
+    { size: [6, 0.02, 4], pos: [0, -0.01, -0.5], color: KITCHEN_COLORS.floor },
+    { size: [6, 3, 0.04], pos: [0, 1.5, -1.52], color: KITCHEN_COLORS.wall },
+    { size: [0.04, 3, 4], pos: [-2.52, 1.5, -0.5], color: KITCHEN_COLORS.wall },
     // base run, plinth and worktop
-    { size: [3.0, 0.1, 0.56], pos: [-0.1, 0.05, -1.2], color: C.dark, edges: false },
-    { size: [3.0, 0.76, 0.6], pos: [-0.1, 0.48, -1.2], color: C.base },
-    { size: [3.04, 0.04, 0.64], pos: [-0.1, 0.88, -1.18], color: C.top },
+    { size: [3.0, 0.1, 0.56], pos: [-0.1, 0.05, -1.2], color: KITCHEN_COLORS.dark, edges: false },
+    { size: [3.0, 0.76, 0.6], pos: [-0.1, 0.48, -1.2], color: KITCHEN_COLORS.base },
+    { size: [3.04, 0.04, 0.64], pos: [-0.1, 0.88, -1.18], color: KITCHEN_COLORS.top },
     // backsplash
-    { size: [3.0, 0.62, 0.02], pos: [-0.1, 1.21, -1.49], color: C.tile },
+    { size: [3.0, 0.62, 0.02], pos: [-0.1, 1.21, -1.49], color: KITCHEN_COLORS.tile },
     // wall units
-    { size: [1.8, 0.72, 0.35], pos: [-0.7, 1.9, -1.32], color: C.timber },
+    { size: [1.8, 0.72, 0.35], pos: [-0.7, 1.9, -1.32], color: KITCHEN_COLORS.timber },
     // hood and duct over the hob
-    { size: [0.62, 0.12, 0.46], pos: [0.75, 1.62, -1.26], color: C.steel },
-    { size: [0.26, 0.74, 0.24], pos: [0.75, 2.05, -1.38], color: C.steel },
+    { size: [0.62, 0.12, 0.46], pos: [0.75, 1.62, -1.26], color: KITCHEN_COLORS.steel },
+    { size: [0.26, 0.74, 0.24], pos: [0.75, 2.05, -1.38], color: KITCHEN_COLORS.steel },
     // hob and sink
-    { size: [0.58, 0.012, 0.44], pos: [0.75, 0.906, -1.18], color: C.dark, edges: false },
-    { size: [0.5, 0.012, 0.38], pos: [-0.85, 0.906, -1.2], color: C.steel },
-    { size: [0.03, 0.26, 0.03], pos: [-0.85, 1.03, -1.42], color: C.steel },
-    { size: [0.03, 0.03, 0.16], pos: [-0.85, 1.15, -1.35], color: C.steel },
+    { size: [0.58, 0.012, 0.44], pos: [0.75, 0.906, -1.18], color: KITCHEN_COLORS.dark, edges: false },
+    { size: [0.5, 0.012, 0.38], pos: [-0.85, 0.906, -1.2], color: KITCHEN_COLORS.steel },
+    { size: [0.03, 0.26, 0.03], pos: [-0.85, 1.03, -1.42], color: KITCHEN_COLORS.steel },
+    { size: [0.03, 0.03, 0.16], pos: [-0.85, 1.15, -1.35], color: KITCHEN_COLORS.steel },
     // tall unit on the right
-    { size: [0.62, 2.3, 0.6], pos: [1.72, 1.15, -1.2], color: C.timber },
+    { size: [0.62, 2.3, 0.6], pos: [1.72, 1.15, -1.2], color: KITCHEN_COLORS.timber },
   ];
   // base doors and handles
   for (let i = 0; i < 5; i++) {
     const x = -1.6 + 0.3 + i * 0.6;
-    parts.push({ size: [0.57, 0.7, 0.02], pos: [x, 0.48, -0.895], color: C.baseFront });
-    parts.push({ size: [0.3, 0.02, 0.02], pos: [x, 0.79, -0.875], color: C.handle, edges: false });
+    parts.push({ size: [0.57, 0.7, 0.02], pos: [x, 0.48, -0.895], color: KITCHEN_COLORS.baseFront });
+    parts.push({ size: [0.3, 0.02, 0.02], pos: [x, 0.79, -0.875], color: KITCHEN_COLORS.handle, edges: false });
   }
   // wall unit doors
   for (let i = 0; i < 3; i++) {
     const x = -1.6 + 0.3 + i * 0.6;
-    parts.push({ size: [0.57, 0.68, 0.02], pos: [x, 1.9, -1.14], color: C.timber });
+    parts.push({ size: [0.57, 0.68, 0.02], pos: [x, 1.9, -1.14], color: KITCHEN_COLORS.timber });
   }
   // tall unit doors
-  parts.push({ size: [0.58, 1.4, 0.02], pos: [1.72, 1.55, -0.895], color: C.timber });
-  parts.push({ size: [0.58, 0.82, 0.02], pos: [1.72, 0.44, -0.895], color: C.timber });
+  parts.push({ size: [0.58, 1.4, 0.02], pos: [1.72, 1.55, -0.895], color: KITCHEN_COLORS.timber });
+  parts.push({ size: [0.58, 0.82, 0.02], pos: [1.72, 0.44, -0.895], color: KITCHEN_COLORS.timber });
   return parts;
 }
 
@@ -122,7 +122,7 @@ function BuiltKitchen({ parts }: { parts: Part[] }) {
       {geos.map(({ p, box }, i) => (
         <group key={i} position={p.pos}>
           <mesh geometry={box}>
-            <meshStandardMaterial color={p.color} roughness={0.8} metalness={p.color === C.steel ? 0.4 : 0} />
+            <meshStandardMaterial color={p.color} roughness={0.8} metalness={p.color === KITCHEN_COLORS.steel ? 0.4 : 0} />
           </mesh>
           {p.edges !== false && (
             <lineSegments geometry={edges[i]}>
