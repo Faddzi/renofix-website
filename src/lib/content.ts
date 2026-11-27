@@ -61,8 +61,13 @@ export const steps = [
 ];
 
 export const getInTouch = {
+  heading: "YOUR SPACE IS WAITING. LET'S GET STARTED.",
+  // Approved intro. The client confirmed the response time "[24 hours]" on 2026-11-27.
+  intro:
+    "Whether you are planning a single modular kitchen or a complete home makeover, we would like to hear about it. Share a few details about your space, your requirements and your timeline, and our team will respond within 24 hours. Your first consultation is free. You can reach us by phone, WhatsApp or email, or fill in the form. If you prefer to meet in person, we are happy to arrange a visit to your site. Every enquiry is handled with no obligation and no pressure.",
   // First consultation line from the approved Get in Touch intro.
   freeConsultation: "Your first consultation is free.",
+  responseTime: "24 hours",
 };
 
 // PLACEHOLDERS. The client has no testimonials yet and asked for placeholders.
