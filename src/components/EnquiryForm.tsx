@@ -69,9 +69,12 @@ export function EnquiryForm() {
     return e;
   };
 
-  const blurCheck = (name: keyof Errors) => () => {
-    if (!form.current || !errors[name]) return;
-    const e = check(new FormData(form.current));
+  // After a failed submit, re-check a field when the visitor leaves it.
+  const onBlur = (ev: React.FocusEvent<HTMLInputElement>) => {
+    const name = ev.currentTarget.name as keyof Errors;
+    const f = ev.currentTarget.form;
+    if (!f || !errors[name]) return;
+    const e = check(new FormData(f));
     setErrors((prev) => ({ ...prev, [name]: e[name] }));
   };
 
@@ -182,7 +185,7 @@ export function EnquiryForm() {
             Name <span className="font-normal text-[var(--muted)]">(required)</span>
           </label>
           <input id="name" name="name" autoComplete="name" required maxLength={fieldLimits.name} className={input}
-            aria-invalid={!!errors.name} aria-describedby={describe("name")} onBlur={blurCheck("name")} />
+            aria-invalid={!!errors.name} aria-describedby={describe("name")} onBlur={onBlur} />
           {errors.name && <p id="name-error" className={errorText}>{errors.name}</p>}
         </div>
         <div>
@@ -190,7 +193,7 @@ export function EnquiryForm() {
             Phone <span className="font-normal text-[var(--muted)]">(required)</span>
           </label>
           <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={fieldLimits.phone}
-            className={input} aria-invalid={!!errors.phone} aria-describedby={describe("phone")} onBlur={blurCheck("phone")} />
+            className={input} aria-invalid={!!errors.phone} aria-describedby={describe("phone")} onBlur={onBlur} />
           {errors.phone && <p id="phone-error" className={errorText}>{errors.phone}</p>}
         </div>
         <div>
@@ -198,7 +201,7 @@ export function EnquiryForm() {
             Email <span className="font-normal text-[var(--muted)]">(required)</span>
           </label>
           <input id="email" name="email" type="email" autoComplete="email" required maxLength={fieldLimits.email}
-            className={input} aria-invalid={!!errors.email} aria-describedby={describe("email")} onBlur={blurCheck("email")} />
+            className={input} aria-invalid={!!errors.email} aria-describedby={describe("email")} onBlur={onBlur} />
           {errors.email && <p id="email-error" className={errorText}>{errors.email}</p>}
         </div>
 
