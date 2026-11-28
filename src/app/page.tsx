@@ -169,15 +169,37 @@ export default function HomePage() {
           </h2>
           <ul className="grid gap-12">
             {testimonials.map((t) => (
-              <li key={t.name}>
+              <li key={t.name + t.project}>
                 <figure className="grid gap-6 border-l-4 border-[var(--accent)] pl-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-12 md:pl-10">
-                  <p
-                    aria-hidden="true"
-                    className="font-[family-name:var(--font-display)] text-4xl uppercase leading-[1.05] md:text-6xl"
-                  >
-                    &ldquo;{t.highlight}&rdquo;
-                  </p>
+                  {t.video ? (
+                    <video
+                      className="aspect-[9/16] w-full max-w-[320px] bg-[var(--fg)] object-cover"
+                      controls
+                      playsInline
+                      preload="none"
+                      poster={t.video.poster}
+                      aria-label={`Video testimonial from ${t.name}`}
+                    >
+                      <source src={t.video.src} type="video/mp4" />
+                      <track kind="captions" src={t.video.captions} srcLang="en" label="English" default />
+                    </video>
+                  ) : (
+                    <p
+                      aria-hidden="true"
+                      className="font-[family-name:var(--font-display)] text-4xl uppercase leading-[1.05] md:text-6xl"
+                    >
+                      &ldquo;{t.highlight}&rdquo;
+                    </p>
+                  )}
                   <div className="flex flex-col gap-6">
+                    {t.video && (
+                      <p
+                        aria-hidden="true"
+                        className="font-[family-name:var(--font-display)] text-4xl uppercase leading-[1.05] md:text-6xl"
+                      >
+                        &ldquo;{t.highlight}&rdquo;
+                      </p>
+                    )}
                     <blockquote className="prose-col text-lg">
                       <p>&ldquo;{t.quote}&rdquo;</p>
                     </blockquote>

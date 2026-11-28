@@ -70,15 +70,39 @@ export const getInTouch = {
   responseTime: "24 hours",
 };
 
-// Real client testimonials. Fatema's is drawn from her Q&A interview (in Hinglish),
+// Real client testimonials. The second is from a client video (Gujarati/Hindi), rendered in English;
+// the video is shown with it.
+// Fatema's is drawn from her Q&A interview (in Hinglish),
 // rendered in English and lightly tidied. Wording awaiting the client's approval.
-export const testimonials = [
+export type Testimonial = {
+  highlight: string;
+  quote: string;
+  name: string;
+  project: string;
+  video?: { src: string; poster: string; captions: string };
+};
+
+export const testimonials: Testimonial[] = [
   {
     highlight: "No hidden costs or vague commitments.",
     quote:
       "At first I had some doubts about quality, timelines and after-sales service. What stood out with Renofix was their professional approach and transparency. They explained every detail clearly, with no hidden costs or vague commitments, and the fitting was completed on time with proper coordination. The kitchen doesn't just look good, it is functional and convenient for daily use. Everyone at home loved it, it feels spacious. I would definitely recommend Renofix to anyone who wants a hassle-free modular kitchen.",
     name: "Fatema Rampurawala",
     project: "Modular kitchen",
+  },
+  {
+    highlight: "The fit and finish is perfect.",
+    quote:
+      "The fit and finish is perfect. The colour combination is very good, and it goes well with the lighting. Yes, I would recommend Renofix to others.",
+    // Client name not known yet. Replace "Renofix client" once confirmed.
+    name: "Renofix client",
+    project: "Home interior",
+    video: {
+      src: "/images/testimonials/client-room-video.mp4",
+      poster: "/images/testimonials/client-room-video-poster.jpg",
+      // English captions, machine-translated from Gujarati/Hindi. Check before launch.
+      captions: "/images/testimonials/client-room-video.en.vtt",
+    },
   },
 ];
 
