@@ -70,12 +70,16 @@ export const getInTouch = {
   responseTime: "24 hours",
 };
 
-// PLACEHOLDERS. The client has no testimonials yet and asked for placeholders.
-// These must be replaced with real, approved client quotes before launch.
-export const placeholderTestimonials = [
-  { quote: "Placeholder testimonial. Replace with a real client quote about a modular kitchen.", name: "Client name", area: "Area" },
-  { quote: "Placeholder testimonial. Replace with a real client quote about a full home renovation.", name: "Client name", area: "Area" },
-  { quote: "Placeholder testimonial. Replace with a real client quote about a bathroom renovation.", name: "Client name", area: "Area" },
+// Real client testimonials. Fatema's is drawn from her Q&A interview (in Hinglish),
+// rendered in English and lightly tidied. Wording awaiting the client's approval.
+export const testimonials = [
+  {
+    highlight: "No hidden costs or vague commitments.",
+    quote:
+      "At first I had some doubts about quality, timelines and after-sales service. What stood out with Renofix was their professional approach and transparency. They explained every detail clearly, with no hidden costs or vague commitments, and the fitting was completed on time with proper coordination. The kitchen doesn't just look good, it is functional and convenient for daily use. Everyone at home loved it, it feels spacious. I would definitely recommend Renofix to anyone who wants a hassle-free modular kitchen.",
+    name: "Fatema Rampurawala",
+    project: "Modular kitchen",
+  },
 ];
 
 export const about = {

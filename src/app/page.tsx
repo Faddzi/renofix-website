@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Hero } from "@/components/Hero";
 import { ClosingCta } from "@/components/ClosingCta";
-import { contact, home, placeholderTestimonials, services, steps } from "@/lib/content";
+import { contact, home, services, steps, testimonials } from "@/lib/content";
 import { categoryLabels, projects } from "@/lib/projects";
 
 export const metadata: Metadata = {
@@ -161,25 +161,32 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials: PLACEHOLDERS requested by the client. Replace before launch. */}
+      {/* Testimonials: real client quotes only. One featured quote per card. */}
       <section aria-labelledby="testimonials-title" className="bg-[var(--surface)]">
         <div className="wrap py-20 md:py-24">
           <h2 id="testimonials-title" className="section-title mb-10 md:mb-14">
             Testimonials
           </h2>
-          <ul className="grid gap-6 md:grid-cols-3">
-            {placeholderTestimonials.map((t, i) => (
-              <li
-                key={i}
-                className="flex flex-col justify-between gap-6 border-2 border-dashed border-[var(--muted)] p-6"
-              >
-                <span className="self-start bg-[var(--fg)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--bg)]">
-                  Placeholder
-                </span>
-                <blockquote className="text-lg">{t.quote}</blockquote>
-                <p className="text-sm text-[var(--muted)]">
-                  {t.name}, {t.area}
-                </p>
+          <ul className="grid gap-12">
+            {testimonials.map((t) => (
+              <li key={t.name}>
+                <figure className="grid gap-6 border-l-4 border-[var(--accent)] pl-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-12 md:pl-10">
+                  <p
+                    aria-hidden="true"
+                    className="font-[family-name:var(--font-display)] text-4xl uppercase leading-[1.05] md:text-6xl"
+                  >
+                    &ldquo;{t.highlight}&rdquo;
+                  </p>
+                  <div className="flex flex-col gap-6">
+                    <blockquote className="prose-col text-lg">
+                      <p>&ldquo;{t.quote}&rdquo;</p>
+                    </blockquote>
+                    <figcaption className="text-sm">
+                      <span className="font-semibold">{t.name}</span>
+                      <span className="text-[var(--muted)]"> · {t.project}</span>
+                    </figcaption>
+                  </div>
+                </figure>
               </li>
             ))}
           </ul>
