@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Hero } from "@/components/Hero";
 import { ClosingCta } from "@/components/ClosingCta";
+import { Fragment } from "react";
+import { TestimonialVideo } from "@/components/TestimonialVideo";
 import { contact, home, services, steps, testimonials } from "@/lib/content";
 import { categoryLabels, projects } from "@/lib/projects";
 
@@ -167,51 +169,42 @@ export default function HomePage() {
           <h2 id="testimonials-title" className="section-title mb-10 md:mb-14">
             Testimonials
           </h2>
-          <ul className="grid gap-12">
-            {testimonials.map((t) => (
-              <li key={t.name + t.project}>
-                <figure className="grid gap-6 border-l-4 border-[var(--accent)] pl-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-12 md:pl-10">
-                  {t.video ? (
-                    <video
-                      className="aspect-[9/16] w-full max-w-[320px] bg-[var(--fg)] object-cover"
-                      controls
-                      playsInline
-                      preload="none"
-                      poster={t.video.poster}
-                      aria-label={`Video testimonial from ${t.name}`}
+          <div className="grid gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] md:gap-8">
+            {testimonials.map((t, i) => {
+              // Phone order: each quote, with its video (if any) right before it.
+              const base = i * 2 + 2;
+              return (
+                <Fragment key={t.name + t.project}>
+                  {t.video && (
+                    <div
+                      style={{ order: base - 1 }}
+                      className="md:!order-none md:col-start-1 md:row-span-2 md:row-start-1"
                     >
-                      <source src={t.video.src} type="video/mp4" />
-                      <track kind="captions" src={t.video.captions} srcLang="en" label="English" default />
-                    </video>
-                  ) : (
+                      <TestimonialVideo {...t.video} name={t.name} project={t.project} />
+                    </div>
+                  )}
+                  <figure
+                    style={{ order: base }}
+                    className="flex flex-col gap-5 border-t-4 border-[var(--accent)] bg-[var(--bg)] p-6 md:!order-none md:col-start-2 md:p-8"
+                  >
                     <p
                       aria-hidden="true"
-                      className="font-[family-name:var(--font-display)] text-4xl uppercase leading-[1.05] md:text-6xl"
+                      className="font-[family-name:var(--font-display)] text-3xl uppercase leading-[1.05] md:text-4xl"
                     >
                       &ldquo;{t.highlight}&rdquo;
                     </p>
-                  )}
-                  <div className="flex flex-col gap-6">
-                    {t.video && (
-                      <p
-                        aria-hidden="true"
-                        className="font-[family-name:var(--font-display)] text-4xl uppercase leading-[1.05] md:text-6xl"
-                      >
-                        &ldquo;{t.highlight}&rdquo;
-                      </p>
-                    )}
-                    <blockquote className="prose-col text-lg">
+                    <blockquote className="text-base md:text-lg">
                       <p>&ldquo;{t.quote}&rdquo;</p>
                     </blockquote>
-                    <figcaption className="text-sm">
+                    <figcaption className="mt-auto text-sm">
                       <span className="font-semibold">{t.name}</span>
                       <span className="text-[var(--muted)]"> · {t.project}</span>
                     </figcaption>
-                  </div>
-                </figure>
-              </li>
-            ))}
-          </ul>
+                  </figure>
+                </Fragment>
+              );
+            })}
+          </div>
         </div>
       </section>
 

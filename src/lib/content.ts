@@ -79,7 +79,7 @@ export type Testimonial = {
   quote: string;
   name: string;
   project: string;
-  video?: { src: string; poster: string; captions: string };
+  video?: { src: string; poster: string; captions: string; duration: string };
 };
 
 export const testimonials: Testimonial[] = [
@@ -102,6 +102,7 @@ export const testimonials: Testimonial[] = [
       poster: "/images/testimonials/client-room-video-poster.jpg",
       // English captions, machine-translated from Gujarati/Hindi. Check before launch.
       captions: "/images/testimonials/client-room-video.en.vtt",
+      duration: "0:37",
     },
   },
 ];
